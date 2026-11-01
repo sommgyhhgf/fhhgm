@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>豆豆铺子 · 照片变拼豆图纸</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root{
+    --paper: #FFF7EC;
+    --card:  #FFFFFF;
+    --ink:   #2E2620;
+    --ink2:  #6A5A4C;
+    --ink3:  #A08D7C;
+    --line:  #F0E1CE;
+    --line2: #E5D2B9;
+
+    --pink:   #FF7BA9;
+    --pink-l: #FFDCE8;
+    --yellow: #FFD23F;
+    --mint:   #45CBB0;
+    --lav:    #B49BFF;
+
+    --acc:    var(--pink);
+    --acc-l:  var(--pink-l);
+
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+            "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --hand: "Kaiti SC", "STKaiti", "KaiTi", "楷体", "Songti SC", serif;
+    --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+
+  body.pet-dog{
+    --acc:   var(--mint);
+    --acc-l: #D5F5EE;
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body{
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--paper);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cg fill='%232E2620' opacity='0.038'%3E%3Cellipse cx='30' cy='34' rx='6.5' ry='8.5' transform='rotate(-12 30 34)'/%3E%3Cellipse cx='47' cy='26' rx='6.5' ry='8.5' transform='rotate(-4 47 26)'/%3E%3Cellipse cx='64' cy='30' rx='6.5' ry='8.5' transform='rotate(8 64 30)'/%3E%3Cellipse cx='78' cy='43' rx='5.5' ry='7.5' transform='rotate(18 78 43)'/%3E%3Cellipse cx='51' cy='51' rx='13' ry='11'/%3E%3C/g%3E%3C/svg%3E");
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button, input, select { font: inherit; color: inherit; }
+  h1, h2, h3 { margin: 0; }
+
+  /* ================= 顶栏 ================= */
+  .topbar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 26px 14px;
+    border-bottom: 2px dashed var(--line2);
+  }
+
+  .brand{ display: flex; align-items: center; gap: 12px; }
+  .brand-mark{
+    width: 46px; height: 46px;
+    flex: 0 0 46px;
+    display: block;
+    transform: rotate(-6deg);
+  }
+
+  .brand h1{
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    line-height: 1.1;
+  }
+  .brand h1 .hl{
+    background-image: linear-gradient(transparent 58%, var(--yellow) 58%, var(--yellow) 92%, transparent 92%);
+    padding: 0 3px;
+  }
+  .brand p{
+    margin: 3px 0 0;
+    font-family: var(--hand);
+    font-size: 14.5px;
+    color: var(--ink2);
+    letter-spacing: .1em;
+  }
+
+  .pet-switch{
+    display: flex;
+    gap: 6px;
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 3px;
+    box-shadow: 0 3px 0 rgba(46,38,32,.16);
+  }
+  .pet-switch button{
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink3);
+    cursor: pointer;
+    transition: background .16s, color .16s;
+  }
+  .pet-switch button.on{ background: var(--ink); color: #fff; }
+
+  /* ================= 布局 ================= */
+  .shell{
+    display: grid;
+    grid-template-columns: 322px minmax(0, 1fr);
+    gap: 22px;
+    padding: 20px 26px 40px;
+    align-items: start;
+  }
+
+  .rail{
+    position: sticky;
+    top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card{
+    background: var(--card);
+    border: 2px solid var(--line2);
+    border-radius: 18px;
+    padding: 14px 15px 16px;
+    box-shadow: 0 3px 0 rgba(229,210,185,.55);
+  }
+
+  .card-head{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 11px;
+  }
+  .card-head .num{
+    width: 20px; height: 20px;
+    flex: 0 0 20px;
+    display: grid; place-items: center;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 800;
+    font-style: italic;
+    padding-top: 1px;
+  }
+  .card-head h2{
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: .06em;
+  }
+  .card-head .side{
+    margin-left: auto;
+    font-size: 11.5px;
+    color: var(--ink3);
+    font-family: var(--hand);
+    letter-spacing: .04em;
+  }
+
+  /* ---------- 上传 ---------- */
+  .drop{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 12px;
+    border: 2px dashed var(--line2);
+    border-radius: 14px;
+    background: #FFFCF6;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color .16s, background .16s, transform .12s;
+  }
+  .drop:hover{ border-color: var(--acc); background: var(--acc-l); }
+  .drop:active{ transform: translateY(1px); }
+  .drop .ico{
+    width: 34px; height: 34px; flex: 0 0 34px;
+    display: grid; place-items: center;
+    border-radius: 11px;
+    background: var(--acc-l);
+    border: 2px solid var(--ink);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .drop b{ display: block; font-size: 13.5px; font-weight: 800; }
+  .drop em{
+    display: block;
+    font-style: normal;
+    font-size: 11.5px;
+    color: var(--ink3);
+    margin-top: 2px;
+  }
+
+  .filebar{
+    display: none;
+    align-items: center;
+    gap: 9px;
+    margin-top: 9px;
+    padding: 7px;
+    border-radius: 12px;
+    background: #FFFCF6;
+    border: 1px solid var(--line);
+  }
+  .filebar.show{ display: flex; }
+  .filebar img{
+    width: 34px; height: 34px; flex: 0 0 34px;
+    border-radius: 9px;
+    object-fit: cover;
+    border: 1px solid var(--line2);
+  }
+  .filebar .fb{ min-width: 0; }
+  .filebar b{
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .filebar em{
+    display: block;
+    font-style: normal;
+    font-size: 11px;
+    color: var(--ink3);
+  }
+
+  /* ---------- 预设 ---------- */
+  .presets{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+  .presets button{
+    border: 2px solid var(--line2);
+    background: #FFFCF6;
+    border-radius: 12px;
+    padding: 7px 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color .15s, background .15s, transform .12s;
+  }
+  .presets button:hover{ border-color: var(--acc); }
+  .presets button.on{
+    border-color: var(--ink);
+    background: var(--acc-l);
+    box-shadow: 0 2px 0 rgba(46,38,32,.16);
+  }
+  .presets b{ display: block; font-size: 12.5px; font-weight: 800; }
+  .presets em{
+    display: block;
+    font-style: normal;
+    font-size: 10.5px;
+    color: var(--ink3);
+    margin-top: 1px;
+  }
+
+  /* ---------- 字段 ---------- */
+  .field{ margin-bottom: 13px; }
+  .field:last-child{ margin-bottom: 0; }
+
+  .field-head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .field-head label, .field-head .lb{
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink2);
+  }
+  .field-head output{
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--acc-l);
+    border-radius: 7px;
+    padding: 1px 7px;
+  }
+
+  input[type="range"]{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 24px;
+    border-radius: 999px;
+    border: 2px solid var(--ink);
+    background: linear-gradient(90deg, var(--acc) var(--p, 50%), #FFFCF6 var(--p, 50%));
+    cursor: pointer;
+    margin: 0;
+    display: block;
+  }
+  input[type="range"]::-webkit-slider-runnable-track{
+    height: 20px;
+    background: transparent;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    margin-top: 1px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2.5px solid var(--ink);
+    box-shadow: 0 2px 0 rgba(46,38,32,.18);
+    transition: transform .12s;
+  }
+  input[type="range"]:active::-webkit-slider-thumb{ transform: scale(1.1); }
+  input[type="range"]::-moz-range-track{ height: 20px; background: transparent; }
+  input[type="range"]::-moz-range-thumb{
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2.5px solid var(--ink);
+  }
+
+  /* ---------- 分段 ---------- */
+  .seg{
+    display: flex;
+    gap: 3px;
+    background: #FFFCF6;
+    border: 2px solid var(--line2);
+    border-radius: 12px;
+    padding: 3px;
+  }
+  .seg button{
+    flex: 1;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    padding: 6px 2px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink3);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .14s, color .14s;
+  }
+  .seg button:hover{ color: var(--ink); }
+  .seg button.on{
+    background: var(--ink);
+    color: #fff;
+    box-shadow: 0 2px 0 rgba(46,38,32,.18);
+  }
+
+  /* ---------- 色块 ---------- */
+  .swatches{ display: flex; gap: 7px; align-items: center; }
+  .swatches button{
+    width: 28px; height: 28px;
+    border-radius: 10px;
+    border: 2px solid var(--ink);
+    background: var(--c);
+    padding: 0;
+    cursor: pointer;
+    transition: transform .14s;
+  }
+  .swatches button:hover{ transform: translateY(-2px) rotate(-4deg); }
+  .swatches button.on{ box-shadow: 0 0 0 3px var(--acc); }
+  .swatches input[type="color"]{
+    width: 28px; height: 28px;
+    padding: 0;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .swatches input[type="color"]::-webkit-color-swatch-wrapper{ padding: 2px; }
+  .swatches input[type="color"]::-webkit-color-swatch{ border: none; border-radius: 7px; }
+
+  .hint{
+    margin: 9px 0 0;
+    font-size: 11px;
+    color: var(--ink3);
+    line-height: 1.6;
+  }
+  .hint b{ color: var(--ink2); font-weight: 700; }
+
+  /* ================= 舞台 ================= */
+  .stage{ display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+  .chart-card{
+    background: var(--card);
+    border: 2px solid var(--line2);
+    border-radius: 22px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 0 rgba(229,210,185,.55);
+    min-width: 0;
+    transition: border-color .16s;
+  }
+  .chart-card.dragover{ border-color: var(--acc); }
+  .chart-card.dragover .chart-wrap{ outline: 3px dashed var(--acc); outline-offset: -6px; }
+
+  .chart-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 11px;
+    border-bottom: 2px dashed var(--line);
+    margin-bottom: 12px;
+  }
+  .chart-head h2{
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .08em;
+  }
+  .petline{
+    margin: 2px 0 0;
+    font-family: var(--hand);
+    font-size: 13.5px;
+    color: var(--ink3);
+    letter-spacing: .06em;
+    min-height: 19px;
+  }
+
+  .mascots{
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    flex: 0 0 auto;
+    cursor: pointer;
+    user-select: none;
+  }
+  .mascots svg{
+    width: 46px;
+    height: 46px;
+    display: block;
+    transform-origin: 50% 100%;
+    transition: opacity .25s, transform .25s;
+  }
+  .mascots .cat{ transform: rotate(-4deg); }
+  .mascots .dog{ margin-left: -8px; transform: rotate(4deg); }
+  body:not(.pet-dog) .mascots .dog{ opacity: .4; transform: rotate(4deg) scale(.92); }
+  body.pet-dog .mascots .cat{ opacity: .4; transform: rotate(-4deg) scale(.92); }
+
+  .eyes{
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: blink 5.4s infinite;
+  }
+  .mascots .dog .eyes{ animation-delay: 1.7s; }
+  @keyframes blink{
+    0%, 92%, 100% { transform: scaleY(1); }
+    95%           { transform: scaleY(.12); }
+  }
+  .mascots.hop svg{ animation: hop .42s ease; }
+  @keyframes hop{
+    0%   { transform: translateY(0) rotate(0); }
+    40%  { transform: translateY(-9px) rotate(-7deg); }
+    100% { transform: translateY(0) rotate(0); }
+  }
+
+  .chart-wrap{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    background:
+      repeating-conic-gradient(#FBF4E9 0% 25%, #FFFDF9 0% 50%) 0 0 / 18px 18px;
+    border-radius: 14px;
+    padding: 12px;
+    min-height: 220px;
+  }
+
+  #view{
+    display: block;
+    border-radius: 8px;
+    image-rendering: pixelated;
+    box-shadow: 0 0 0 2px rgba(46,38,32,.12);
+  }
+
+  .orig{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    border-radius: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .1s;
+  }
+  #frame.compare .orig{ opacity: 1; }
+
+  .tip{
+    position: absolute;
+    z-index: 5;
+    display: none;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 9px 5px 6px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 9px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translate(-50%, -140%);
+    box-shadow: 0 4px 0 rgba(46,38,32,.18);
+  }
+  .tip.show{ display: flex; }
+  .tip i{
+    width: 14px; height: 14px;
+    border-radius: 4px;
+    border: 1.5px solid rgba(255,255,255,.75);
+    display: block;
+  }
+  .tip b{ font-family: var(--mono); font-weight: 700; }
+  .tip span{ color: rgba(255,255,255,.72); }
+
+  .chart-foot{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .meta{
+    font-size: 12.5px;
+    color: var(--ink2);
+    font-variant-numeric: tabular-nums;
+  }
+  .meta b{ color: var(--ink); }
+
+  .acts{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  .btn{
+    border: 2px solid var(--ink);
+    background: #fff;
+    border-radius: 11px;
+    padding: 7px 13px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--ink);
+    transition: transform .1s, box-shadow .1s, background .15s;
+  }
+  .btn:hover{ background: #FFF8EC; }
+  .btn:active{ transform: translateY(3px); box-shadow: 0 0 0 var(--ink); }
+  .btn.primary{ background: var(--acc); color: var(--ink); }
+  .btn.primary:hover{ filter: brightness(1.04); background: var(--acc); }
+  .btn.tiny{
+    padding: 5px 10px;
+    font-size: 12px;
+    box-shadow: 0 2px 0 var(--ink);
+    border-radius: 9px;
+  }
+  .btn.tiny:active{ transform: translateY(2px); box-shadow: 0 0 0 var(--ink); }
+
+  select.sel{
+    border: 2px solid var(--ink);
+    background: #fff;
+    border-radius: 11px;
+    padding: 6px 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--ink);
+  }
+
+  /* ---------- 用豆清单 ---------- */
+  .bom-card{
+    background: var(--card);
+    border: 2px solid var(--line2);
+    border-radius: 22px;
+    padding: 13px 16px 15px;
+    box-shadow: 0 4px 0 rgba(229,210,185,.55);
+  }
+  .bom-head{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 11px;
+    flex-wrap: wrap;
+  }
+  .bom-head h2{
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .bom-head h2 svg{ width: 18px; height: 18px; }
+  .bom-head .bmeta{
+    font-size: 12px;
+    color: var(--ink3);
+    font-variant-numeric: tabular-nums;
+  }
+  .bom-head .btn{ margin-left: auto; }
+
+  .bom-list{ display: flex; flex-wrap: wrap; gap: 6px; }
+  .bom-item{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px 4px 4px;
+    border-radius: 999px;
+    background: #FFFCF6;
+    border: 2px solid var(--line);
+    font-size: 12px;
+    transition: transform .12s;
+  }
+  .bom-item:hover{ transform: translateY(-2px); }
+  .bom-item .sw{
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(46,38,32,.35);
+    display: block;
+  }
+  .bom-item .code{
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 11.5px;
+  }
+  .bom-item .nm{ color: var(--ink2); }
+  .bom-item .ct{
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--ink);
+    padding-left: 2px;
+  }
+
+  .stage-tip{
+    font-size: 11.5px;
+    color: var(--ink3);
+    text-align: right;
+    padding-right: 4px;
+    margin: 0;
+  }
+  .stage-tip kbd{
+    font-family: var(--font);
+    font-size: 10.5px;
+    background: #fff;
+    border: 1.5px solid var(--line2);
+    border-bottom-width: 2.5px;
+    border-radius: 6px;
+    padding: 0 5px;
+  }
+
+  @media (max-width: 980px){
+    .shell{ grid-template-columns: 1fr; padding: 16px 14px 32px; }
+    .rail{ position: static; }
+    .topbar{ padding: 14px 16px 12px; }
+    .brand h1{ font-size: 20px; }
+    .mascots svg{ width: 40px; height: 40px; }
+    .chart-wrap{ padding: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+      <path d="M26 34 22 12l19 9z" fill="#FFC978" stroke="#2E2620" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M74 34 78 12 59 21z" fill="#FFC978" stroke="#2E2620" stroke-width="4" stroke-linejoin="round"/>
+      <circle cx="50" cy="55" r="32" fill="#FFC978" stroke="#2E2620" stroke-width="4"/>
+      <path d="M38 46c1.5 3 4.5 3 6 0M56 46c1.5 3 4.5 3 6 0" stroke="#2E2620" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M47 60h6l-3 4z" fill="#FF7BA9"/>
+      <path d="M50 64v3c0 2-3 2-4 0M50 67c0 2 3 2 4 0" stroke="#2E2620" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <ellipse cx="27" cy="60" rx="6" ry="4" fill="#FF9CB8" opacity=".9"/>
+      <ellipse cx="73" cy="60" rx="6" ry="4" fill="#FF9CB8" opacity=".9"/>
+    </svg>
+    <div>
+      <h1><span class="hl">豆豆铺子</span></h1>
+      <p>一张照片，一格一颗豆</p>
+    </div>
+  </div>
+
+  <div class="pet-switch" id="petSwitch">
+    <button type="button" data-pet="cat" class="on">猫派</button>
+    <button type="button" data-pet="dog">狗派</button>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- ================= 左栏 ================= -->
+  <aside class="rail">
+
+    <section class="card">
+      <div class="card-head">
+        <span class="num">1</span>
+        <h2>放照片</h2>
+        <span class="side">底色越简单越好拼</span>
+      </div>
+
+      <button class="drop" id="pick" type="button">
+        <span class="ico">＋</span>
+        <span>
+          <b>选一张照片</b>
+          <em>点这里 / 拖进来 / ⌘V 粘贴</em>
+        </span>
+      </button>
+      <input type="file" id="file" accept="image/*" hidden />
+
+      <div class="filebar" id="filebar">
+        <img id="thumb" alt="" />
+        <div class="fb">
+          <b id="fname">示例图</b>
+          <em id="fsize">1200 × 900</em>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <span class="num">2</span>
+        <h2>图纸尺寸</h2>
+      </div>
+
+      <div class="presets" id="presets">
+        <button type="button" data-p="charm" class="on"><b>小挂件</b><em>16 颗 · 8 cm</em></button>
+        <button type="button" data-p="coaster"><b>杯垫</b><em>24 颗 · 12 cm</em></button>
+        <button type="button" data-p="frame"><b>相框画</b><em>32 颗 · 16 cm</em></button>
+        <button type="button" data-p="poster"><b>挂画</b><em>48 颗 · 24 cm</em></button>
+      </div>
+
+      <div class="field">
+        <div class="field-head">
+          <label for="beads">横向颗数</label>
+          <output id="beadsOut">32</output>
+        </div>
+        <input type="range" id="beads" min="12" max="110" step="1" value="32" />
+      </div>
+
+      <div class="field">
+        <div class="field-head">
+          <label for="gap">豆子间隙</label>
+          <output id="gapOut">8%</output>
+        </div>
+        <input type="range" id="gap" min="0" max="40" step="1" value="8" />
+      </div>
+
+      <div class="field">
+        <div class="field-head"><span class="lb">豆子样式</span></div>
+        <div class="seg" id="shapeSeg">
+          <button type="button" data-v="round" class="on">圆豆</button>
+          <button type="button" data-v="square">方豆</button>
+          <button type="button" data-v="circle">小圆点</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-head"><span class="lb">格子上标色号</span></div>
+        <div class="seg" id="codeSeg">
+          <button type="button" data-v="1" class="on">标上</button>
+          <button type="button" data-v="0">留白</button>
+        </div>
+        <p class="hint" id="codeHint">格子够大才写得下色号。</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <span class="num">3</span>
+        <h2>用豆颜色</h2>
+        <span class="side">少一种少买一包</span>
+      </div>
+
+      <div class="field">
+        <div class="field-head"><span class="lb">最多用几个色号</span></div>
+        <div class="seg" id="colorSeg">
+          <button type="button" data-v="0" class="on">不限</button>
+          <button type="button" data-v="24">24</button>
+          <button type="button" data-v="16">16</button>
+          <button type="button" data-v="12">12</button>
+          <button type="button" data-v="8">8</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-head"><span class="lb">豆子之间露出的底色</span></div>
+        <div class="swatches" id="bgSeg">
+          <button type="button" data-v="#FFFFFF" style="--c:#FFFFFF" class="on"></button>
+          <button type="button" data-v="#FFF3E4" style="--c:#FFF3E4"></button>
+          <button type="button" data-v="#2E2620" style="--c:#2E2620"></button>
+          <button type="button" data-v="#FFE1EC" style="--c:#FFE1EC"></button>
+          <input type="color" id="bgCustom" value="#ffffff" title="自己挑个底色" />
+        </div>
+        <p class="hint">要打印图纸选白底；想贴进手账，粉底更配。</p>
+      </div>
+
+      <div class="field">
+        <div class="field-head"><span class="lb">杂色抖动</span></div>
+        <div class="seg" id="ditherSeg">
+          <button type="button" data-v="0" class="on">关掉</button>
+          <button type="button" data-v="1">打开</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <span class="num">4</span>
+        <h2>调一调</h2>
+      </div>
+
+      <div class="field">
+        <div class="field-head">
+          <label for="bright">亮度</label>
+          <output id="brightOut">0</output>
+        </div>
+        <input type="range" id="bright" min="-100" max="100" step="1" value="0" />
+      </div>
+
+      <div class="field">
+        <div class="field-head">
+          <label for="contrast">对比度</label>
+          <output id="contrastOut">0</output>
+        </div>
+        <input type="range" id="contrast" min="-100" max="100" step="1" value="0" />
+      </div>
+
+      <div class="field">
+        <div class="field-head">
+          <label for="sat">饱和度</label>
+          <output id="satOut">100%</output>
+        </div>
+        <input type="range" id="sat" min="0" max="200" step="1" value="100" />
+      </div>
+    </section>
+
+  </aside>
+
+  <!-- ================= 舞台 ================= -->
+  <main class="stage">
+
+    <div class="chart-card" id="chartCard">
+      <div class="chart-head">
+        <div>
+          <h2>拼豆图纸</h2>
+          <p class="petline" id="petLine">我盯着呢，一颗都别数错。</p>
+        </div>
+
+        <div class="mascots" id="mascots" title="点我一下">
+          <svg class="cat" viewBox="0 0 120 120" aria-hidden="true">
+            <path d="M88 98c14 3 23-7 19-20" fill="none" stroke="#2E2620" stroke-width="9" stroke-linecap="round"/>
+            <path d="M88 98c14 3 23-7 19-20" fill="none" stroke="#FF9CBE" stroke-width="5" stroke-linecap="round"/>
+            <path d="M33 86c0-17 12-27 27-27s27 10 27 27v11c0 8-9 12-27 12s-27-4-27-12z"
+                  fill="#FFFBF2" stroke="#2E2620" stroke-width="3.4" stroke-linejoin="round"/>
+            <ellipse cx="60" cy="94" rx="13" ry="10" fill="#FFE3EC"/>
+            <path d="M40 30 35 12l17 8z" fill="#FFFBF2" stroke="#2E2620" stroke-width="3.4" stroke-linejoin="round"/>
+            <path d="M80 30 85 12 68 20z" fill="#FFFBF2" stroke="#2E2620" stroke-width="3.4" stroke-linejoin="round"/>
+            <path d="M43 27l-2-8 8 4z" fill="#FFB3C6"/>
+            <path d="M77 27l2-8-8 4z" fill="#FFB3C6"/>
+            <circle cx="60" cy="48" r="27" fill="#FFFBF2" stroke="#2E2620" stroke-width="3.4"/>
+            <ellipse cx="42" cy="57" rx="5.5" ry="3.6" fill="#FFB3C6" opacity=".9"/>
+            <ellipse cx="78" cy="57" rx="5.5" ry="3.6" fill="#FFB3C6" opacity=".9"/>
+            <g class="eyes">
+              <ellipse cx="50" cy="47" rx="3.6" ry="4.6" fill="#2E2620"/>
+              <ellipse cx="70" cy="47" rx="3.6" ry="4.6" fill="#2E2620"/>
+            </g>
+            <path d="M56.5 55h7l-3.5 4.5z" fill="#FF7BA9"/>
+            <path d="M60 59.5v3" stroke="#2E2620" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M60 62.5c-1.2 2-4 2-5 .5M60 62.5c1.2 2 4 2 5 .5" stroke="#2E2620" stroke-width="2.2"
+                  stroke-linecap="round" fill="none"/>
+            <path d="M31 44h-8M31 51l-8 3M89 44h8M89 51l8 3" stroke="#2E2620" stroke-width="2.2"
+                  stroke-linecap="round" opacity=".6"/>
+            <ellipse cx="49" cy="107" rx="8" ry="5.5" fill="#FFFBF2" stroke="#2E2620" stroke-width="3.4"/>
+            <ellipse cx="71" cy="107" rx="8" ry="5.5" fill="#FFFBF2" stroke="#2E2620" stroke-width="3.4"/>
+          </svg>
+
+          <svg class="dog" viewBox="0 0 120 120" aria-hidden="true">
+            <path d="M86 96c13 6 24-2 22-14" fill="none" stroke="#2E2620" stroke-width="10" stroke-linecap="round"/>
+            <path d="M86 96c13 6 24-2 22-14" fill="none" stroke="#F2A03D" stroke-width="5.5" stroke-linecap="round"/>
+            <path d="M33 86c0-17 12-27 27-27s27 10 27 27v11c0 8-9 12-27 12s-27-4-27-12z"
+                  fill="#FFC978" stroke="#2E2620" stroke-width="3.4" stroke-linejoin="round"/>
+            <ellipse cx="60" cy="95" rx="13" ry="10" fill="#FFF1DC"/>
+            <path d="M38 30c-9 1-14 11-11 21 2 7 9 8 13 3z" fill="#E8903A" stroke="#2E2620" stroke-width="3.4"
+                  stroke-linejoin="round"/>
+            <path d="M82 30c9 1 14 11 11 21-2 7-9 8-13 3z" fill="#E8903A" stroke="#2E2620" stroke-width="3.4"
+                  stroke-linejoin="round"/>
+            <circle cx="60" cy="48" r="26" fill="#FFC978" stroke="#2E2620" stroke-width="3.4"/>
+            <ellipse cx="60" cy="56" rx="15" ry="12" fill="#FFF1DC"/>
+            <ellipse cx="42" cy="56" rx="5" ry="3.4" fill="#FF9CB8" opacity=".85"/>
+            <ellipse cx="78" cy="56" rx="5" ry="3.4" fill="#FF9CB8" opacity=".85"/>
+            <g class="eyes">
+              <ellipse cx="51" cy="45" rx="3.4" ry="4.4" fill="#2E2620"/>
+              <ellipse cx="69" cy="45" rx="3.4" ry="4.4" fill="#2E2620"/>
+            </g>
+            <ellipse cx="60" cy="52" rx="4.6" ry="3.6" fill="#2E2620"/>
+            <path d="M60 55.5v3" stroke="#2E2620" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M56 62h8v5a4 4 0 0 1-8 0z" fill="#FF7BA9" stroke="#2E2620" stroke-width="2.2"
+                  stroke-linejoin="round"/>
+            <ellipse cx="49" cy="107" rx="8" ry="5.5" fill="#FFC978" stroke="#2E2620" stroke-width="3.4"/>
+            <ellipse cx="71" cy="107" rx="8" ry="5.5" fill="#FFC978" stroke="#2E2620" stroke-width="3.4"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="chart-wrap" id="chartWrap">
+        <div id="frame" style="position:relative;display:flex;justify-content:center;min-width:0;max-width:100%;">
+          <canvas id="view" width="120" height="90"></canvas>
+          <img class="orig" id="orig" alt="原照片" />
+        </div>
+        <div class="tip" id="tip"><i></i><b></b><span></span></div>
+      </div>
+
+      <div class="chart-foot">
+        <div class="meta" id="metaText">—</div>
+        <div class="acts">
+          <select class="sel" id="expSize">
+            <option value="24">图纸 24px/格</option>
+            <option value="32" selected>图纸 32px/格</option>
+            <option value="48">图纸 48px/格</option>
+          </select>
+          <button class="btn" id="compare" type="button">看原图</button>
+          <button class="btn primary" id="download" type="button">下载图纸</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="bom-card">
+      <div class="bom-head">
+        <h2>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 13c0-3.3 2.7-6 6-6 2.4 0 4.5 1.4 5.5 3.5L20 9l-2.5 4 2.5 4-4.5-1.6C14.5 17.6 12.4 19 10 19c-3.3 0-6-2.7-6-6z"
+                  fill="#FFD23F" stroke="#2E2620" stroke-width="1.8" stroke-linejoin="round"/>
+            <circle cx="8" cy="12" r="1.4" fill="#2E2620"/>
+          </svg>
+          用豆清单
+        </h2>
+        <span class="bmeta" id="bomMeta">—</span>
+        <button class="btn tiny" id="csv" type="button">导出 CSV</button>
+      </div>
+      <div class="bom-list" id="bomList"></div>
+    </section>
+
+    <p class="stage-tip">鼠标停在格子上能看见它是几号豆 · 按住 <kbd>空格</kbd> 看原图</p>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ============================================================
+     色板：58 个拼豆色号（按色系分组，字母是色系，数字是深浅）
+     ============================================================ */
+  const BEADS = [
+    { c: "W01", n: "云白",   h: "#FFFFFF" },
+    { c: "W02", n: "奶油",   h: "#FFF3DC" },
+    { c: "W03", n: "米色",   h: "#F2DFC0" },
+    { c: "W04", n: "燕麦",   h: "#E3C79E" },
+    { c: "W05", n: "浅肤",   h: "#F8D7B8" },
+    { c: "W06", n: "粉肤",   h: "#F0B99B" },
+    { c: "W07", n: "浅灰",   h: "#D9D6D0" },
+    { c: "W08", n: "中灰",   h: "#A3A09A" },
+    { c: "W09", n: "深灰",   h: "#6B6862" },
+    { c: "W10", n: "墨黑",   h: "#2C2A28" },
+    { c: "W11", n: "奶茶",   h: "#A97C55" },
+    { c: "W12", n: "咖啡",   h: "#6B4A32" },
+
+    { c: "R01", n: "正红",   h: "#DE3B32" },
+    { c: "R02", n: "番茄",   h: "#F0593F" },
+    { c: "R03", n: "珊瑚",   h: "#FF7C5C" },
+    { c: "R04", n: "砖红",   h: "#B33A2E" },
+    { c: "R05", n: "樱桃",   h: "#C6133A" },
+    { c: "R06", n: "西瓜",   h: "#FF4D6D" },
+    { c: "R07", n: "酒红",   h: "#7E1F2E" },
+    { c: "R08", n: "蜜桃",   h: "#FFA98A" },
+
+    { c: "P01", n: "淡粉",   h: "#FFE8EF" },
+    { c: "P02", n: "樱花粉", h: "#FFD3E0" },
+    { c: "P03", n: "蜜桃粉", h: "#FFB3C6" },
+    { c: "P04", n: "水蜜桃", h: "#FF8FAB" },
+    { c: "P05", n: "玫红",   h: "#FF5C8A" },
+    { c: "P06", n: "洋红",   h: "#E23E7B" },
+    { c: "P07", n: "藕荷",   h: "#D98BA6" },
+    { c: "P08", n: "玫瑰",   h: "#FF7BA0" },
+
+    { c: "O01", n: "柠檬黄", h: "#FFE94D" },
+    { c: "O02", n: "阳光黄", h: "#FFD23F" },
+    { c: "O03", n: "蜂蜜",   h: "#FFB627" },
+    { c: "O04", n: "蜜橘",   h: "#FF9A3C" },
+    { c: "O05", n: "焦糖",   h: "#D97B2B" },
+    { c: "O06", n: "淡黄",   h: "#FFF3B0" },
+    { c: "O07", n: "杏色",   h: "#FFC48C" },
+    { c: "O08", n: "土黄",   h: "#C9A227" },
+
+    { c: "G01", n: "苹果绿", h: "#A6DE4A" },
+    { c: "G02", n: "草绿",   h: "#5FBF4A" },
+    { c: "G03", n: "森林绿", h: "#2E7D4F" },
+    { c: "G04", n: "抹茶",   h: "#C7D96B" },
+    { c: "G05", n: "薄荷",   h: "#A8E6CF" },
+    { c: "G06", n: "湖水",   h: "#4ECDC4" },
+    { c: "G07", n: "松绿",   h: "#1F6B5A" },
+    { c: "G08", n: "苔绿",   h: "#6B7A3A" },
+
+    { c: "B01", n: "冰蓝",   h: "#CFEAFB" },
+    { c: "B02", n: "天空蓝", h: "#6EC6F5" },
+    { c: "B03", n: "湖蓝",   h: "#2FA8D8" },
+    { c: "B04", n: "宝蓝",   h: "#2E6BDF" },
+    { c: "B05", n: "藏蓝",   h: "#24407A" },
+    { c: "B06", n: "雾蓝",   h: "#8FA9C4" },
+    { c: "B07", n: "浅蓝",   h: "#A9D6F0" },
+    { c: "B08", n: "孔雀蓝", h: "#1E7A8C" },
+
+    { c: "V01", n: "淡紫",   h: "#EDE0FA" },
+    { c: "V02", n: "丁香",   h: "#DCC6F0" },
+    { c: "V03", n: "薰衣草", h: "#C7A0FF" },
+    { c: "V04", n: "葡萄",   h: "#7B4BB7" },
+    { c: "V05", n: "紫罗兰", h: "#A75BD6" },
+    { c: "V06", n: "梅子",   h: "#5B2E63" }
+  ];
+
+  BEADS.forEach(function (b) {
+    const h = b.h.replace("#", "");
+    b.r = parseInt(h.slice(0, 2), 16);
+    b.g = parseInt(h.slice(2, 4), 16);
+    b.b = parseInt(h.slice(4, 6), 16);
+    b.lum = 0.299 * b.r + 0.587 * b.g + 0.114 * b.b;
+  });
+
+  /* ============================================================
+     状态
+     ============================================================ */
+  const state = {
+    beads: 32,
+    gap: 0.08,
+    shape: "round",
+    maxColors: 0,
+    bg: "#FFFFFF",
+    dither: false,
+    showCodes: true,
+    brightness: 0,
+    contrast: 0,
+    sat: 100,
+    exportCell: 32
+  };
+
+  const PRESETS = {
+    charm:   { beads: 16, maxColors: 8,  gap: 0.10, shape: "round" },
+    coaster: { beads: 24, maxColors: 12, gap: 0.09, shape: "round" },
+    frame:   { beads: 32, maxColors: 16, gap: 0.08, shape: "round" },
+    poster:  { beads: 48, maxColors: 0,  gap: 0.05, shape: "square" }
+  };
+
+  const CODE_MIN_CELL = 20;
+
+  /* ============================================================
+     元素
+     ============================================================ */
+  const $ = function (s) { return document.querySelector(s); };
+
+  const view = $("#view");
+  const frame = $("#frame");
+  const origImg = $("#orig");
+  const tip = $("#tip");
+  const chartWrap = $("#chartWrap");
+
+  const els = {
+    beads: $("#beads"), beadsOut: $("#beadsOut"),
+    gap: $("#gap"), gapOut: $("#gapOut"),
+    bright: $("#bright"), brightOut: $("#brightOut"),
+    contrast: $("#contrast"), contrastOut: $("#contrastOut"),
+    sat: $("#sat"), satOut: $("#satOut"),
+    shapeSeg: $("#shapeSeg"), colorSeg: $("#colorSeg"),
+    ditherSeg: $("#ditherSeg"), bgSeg: $("#bgSeg"),
+    codeSeg: $("#codeSeg"), codeHint: $("#codeHint"),
+    bgCustom: $("#bgCustom"), presets: $("#presets"),
+    expSize: $("#expSize"), download: $("#download"), csv: $("#csv"),
+    meta: $("#metaText"), bomList: $("#bomList"), bomMeta: $("#bomMeta"),
+    filebar: $("#filebar"), fname: $("#fname"), fsize: $("#fsize"),
+    thumb: $("#thumb"), pick: $("#pick"), fileInput: $("#file"),
+    petLine: $("#petLine"), mascots: $("#mascots"),
+    petSwitch: $("#petSwitch"), chartCard: $("#chartCard")
+  };
+
+  /* ============================================================
+     源图
+     ============================================================ */
+  const MAX_SIDE = 2200;
+  let sourceCanvas = null;
+  let sourceW = 1, sourceH = 1;
+  let currentURL = null;
+
+  let lastIdx = null;
+  let lastCols = 0, lastRows = 0;
+  let lastBom = [];
+  let lastCell = 20;
+
+  const work = document.createElement("canvas");
+
+  /* ---------- 示例图：一只橘猫的平涂插画 ---------- */
+  function makeDemo() {
+    const W = 1200, H = 900;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const g = c.getContext("2d");
+
+    g.fillStyle = "#FFDCC0";
+    g.fillRect(0, 0, W, H);
+
+    g.fillStyle = "#FFCFA8";
+    g.beginPath(); g.arc(120, 140, 90, 0, 7); g.fill();
+    g.beginPath(); g.arc(1090, 200, 120, 0, 7); g.fill();
+    g.fillStyle = "#FFE9D2";
+    g.beginPath(); g.arc(980, 760, 150, 0, 7); g.fill();
+    g.beginPath(); g.arc(210, 780, 110, 0, 7); g.fill();
+
+    function flower(cx, cy, r, col) {
+      g.fillStyle = col;
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+        g.beginPath();
+        g.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, r * 0.78, 0, 7);
+        g.fill();
+      }
+      g.fillStyle = "#FFD23F";
+      g.beginPath(); g.arc(cx, cy, r * 0.55, 0, 7); g.fill();
+    }
+    flower(150, 330, 34, "#FFFFFF");
+    flower(1050, 560, 40, "#FFFFFF");
+    flower(900, 130, 26, "#FFB3C6");
+
+    // 身体
+    g.fillStyle = "#F5A04A";
+    g.beginPath(); g.ellipse(600, 700, 300, 210, 0, 0, 7); g.fill();
+    g.fillStyle = "#FFE2C0";
+    g.beginPath(); g.ellipse(600, 760, 180, 140, 0, 0, 7); g.fill();
+
+    // 耳朵
+    g.fillStyle = "#F5A04A";
+    g.beginPath(); g.moveTo(380, 330); g.lineTo(345, 120); g.lineTo(520, 235); g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(820, 330); g.lineTo(855, 120); g.lineTo(680, 235); g.closePath(); g.fill();
+    g.fillStyle = "#FF9CB8";
+    g.beginPath(); g.moveTo(398, 300); g.lineTo(378, 175); g.lineTo(480, 250); g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(802, 300); g.lineTo(822, 175); g.lineTo(720, 250); g.closePath(); g.fill();
+
+    // 头
+    g.fillStyle = "#F5A04A";
+    g.beginPath(); g.ellipse(600, 450, 270, 245, 0, 0, 7); g.fill();
+
+    // 额头花纹
+    g.fillStyle = "#E08A3A";
+    [-70, 0, 70].forEach(function (dx, i) {
+      g.beginPath();
+      g.ellipse(600 + dx, 296 + (i === 1 ? 18 : 0), 15, 44, dx * 0.004, 0, 7);
+      g.fill();
+    });
+
+    // 白嘴套
+    g.fillStyle = "#FFF0DC";
+    g.beginPath(); g.ellipse(600, 540, 130, 95, 0, 0, 7); g.fill();
+
+    // 眼睛
+    g.fillStyle = "#2C2A28";
+    g.beginPath(); g.ellipse(490, 420, 42, 54, 0, 0, 7); g.fill();
+    g.beginPath(); g.ellipse(710, 420, 42, 54, 0, 0, 7); g.fill();
+    g.fillStyle = "#FFFFFF";
+    g.beginPath(); g.arc(505, 400, 15, 0, 7); g.fill();
+    g.beginPath(); g.arc(725, 400, 15, 0, 7); g.fill();
+
+    // 腮红
+    g.fillStyle = "#FFA6BE";
+    g.beginPath(); g.ellipse(415, 505, 42, 24, 0, 0, 7); g.fill();
+    g.beginPath(); g.ellipse(785, 505, 42, 24, 0, 0, 7); g.fill();
+
+    // 鼻子和嘴
+    g.fillStyle = "#FF7BA9";
+    g.beginPath(); g.moveTo(578, 505); g.lineTo(622, 505); g.lineTo(600, 532); g.closePath(); g.fill();
+    g.strokeStyle = "#2C2A28";
+    g.lineWidth = 7;
+    g.lineCap = "round";
+    g.beginPath(); g.moveTo(600, 532); g.lineTo(600, 556); g.stroke();
+    g.beginPath(); g.arc(572, 556, 28, 0.1, Math.PI - 0.1); g.stroke();
+    g.beginPath(); g.arc(628, 556, 28, 0.1, Math.PI - 0.1); g.stroke();
+
+    // 胡须
+    g.strokeStyle = "#FFFFFF";
+    g.lineWidth = 6;
+    [-30, 5, 40].forEach(function (dy) {
+      g.beginPath(); g.moveTo(430, 500 + dy); g.lineTo(318, 470 + dy * 1.1); g.stroke();
+      g.beginPath(); g.moveTo(770, 500 + dy); g.lineTo(882, 470 + dy * 1.1); g.stroke();
+    });
+
+    // 蝴蝶结
+    g.fillStyle = "#FF7BA9";
+    g.beginPath(); g.ellipse(812, 298, 58, 40, -0.5, 0, 7); g.fill();
+    g.beginPath(); g.ellipse(878, 348, 58, 40, 0.5, 0, 7); g.fill();
+    g.fillStyle = "#FFB3C6";
+    g.beginPath(); g.arc(845, 324, 16, 0, 7); g.fill();
+
+    return c;
+  }
+
+  function normalize(src, w, h) {
+    const s = Math.min(1, MAX_SIDE / Math.max(w, h));
+    const cw = Math.max(1, Math.round(w * s));
+    const ch = Math.max(1, Math.round(h * s));
+
+    const c = document.createElement("canvas");
+    c.width = cw; c.height = ch;
+    const ctx = c.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(src, 0, 0, cw, ch);
+
+    sourceCanvas = c;
+    sourceW = cw;
+    sourceH = ch;
+  }
+
+  function loadFile(file) {
+    if (!file || !/^image\//.test(file.type)) return;
+
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+
+    img.onload = function () {
+      normalize(img, img.naturalWidth, img.naturalHeight);
+
+      if (currentURL) URL.revokeObjectURL(currentURL);
+      currentURL = url;
+
+      origImg.src = url;
+      els.thumb.src = url;
+      els.fname.textContent = file.name.length > 24
+        ? file.name.slice(0, 21) + "…" : file.name;
+      els.fsize.textContent = img.naturalWidth + " × " + img.naturalHeight;
+      els.filebar.classList.add("show");
+
+      say(pickLine(ON_UPLOAD));
+      render();
+    };
+
+    img.onerror = function () { URL.revokeObjectURL(url); };
+    img.src = url;
+  }
+
+  /* ============================================================
+     降采样（逐级减半，避免摩尔纹）
+     ============================================================ */
+  function downscale(src, tw, th) {
+    let cur = src, cw = src.width, ch = src.height;
+
+    while (cw > tw * 2 && ch > th * 2) {
+      const nw = Math.max(tw, Math.floor(cw / 2));
+      const nh = Math.max(th, Math.floor(ch / 2));
+      const n = document.createElement("canvas");
+      n.width = nw; n.height = nh;
+      const nctx = n.getContext("2d");
+      nctx.imageSmoothingEnabled = true;
+      nctx.imageSmoothingQuality = "high";
+      nctx.drawImage(cur, 0, 0, nw, nh);
+      cur = n; cw = nw; ch = nh;
+    }
+    return cur;
+  }
+
+  /* ============================================================
+     调色
+     ============================================================ */
+  function clamp255(v) { return v < 0 ? 0 : v > 255 ? 255 : v; }
+
+  function adjustPass(d) {
+    const br = state.brightness * 2.4;
+    const cv = Math.max(-250, Math.min(250, state.contrast * 2.4));
+    const cf = (259 * (cv + 255)) / (255 * (259 - cv));
+    const s = state.sat / 100;
+
+    const useBR = br !== 0, useCV = cv !== 0, useSAT = s !== 1;
+    if (!useBR && !useCV && !useSAT) return;
+
+    for (let i = 0; i < d.length; i += 4) {
+      let r = d[i], g = d[i + 1], b = d[i + 2];
+
+      if (useBR) { r += br; g += br; b += br; }
+      if (useCV) {
+        r = cf * (r - 128) + 128;
+        g = cf * (g - 128) + 128;
+        b = cf * (b - 128) + 128;
+      }
+      if (useSAT) {
+        const l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        r = l + (r - l) * s;
+        g = l + (g - l) * s;
+        b = l + (b - l) * s;
+      }
+
+      d[i] = clamp255(r);
+      d[i + 1] = clamp255(g);
+      d[i + 2] = clamp255(b);
+    }
+  }
+
+  /* ============================================================
+     找最近的豆子色（redmean 加权）
+     ============================================================ */
+  function nearestBead(r, g, b) {
+    let best = 0, bestD = Infinity;
+    for (let i = 0; i < BEADS.length; i++) {
+      const p = BEADS[i];
+      const dr = r - p.r, dg = g - p.g, db = b - p.b;
+      const rm = (r + p.r) * 0.5;
+      const d = (2 + rm / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rm) / 256) * db * db;
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    return best;
+  }
+
+  const BAYER4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+
+  function mapToBeads(data, cols, rows) {
+    const n = cols * rows;
+    const idx = new Int16Array(n);
+    const cache = new Map();
+    const amp = state.dither ? 26 : 0;
+
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const i = y * cols + x;
+        const o = i * 4;
+
+        let r = data[o], g = data[o + 1], b = data[o + 2];
+
+        if (amp) {
+          const t = (BAYER4[(y & 3) * 4 + (x & 3)] / 16 - 0.47) * amp;
+          r = clamp255(r + t);
+          g = clamp255(g + t);
+          b = clamp255(b + t);
+        }
+
+        const key = (r << 16) | (g << 8) | b;
+        let v = cache.get(key);
+        if (v === undefined) {
+          v = nearestBead(r, g, b);
+          cache.set(key, v);
+        }
+        idx[i] = v;
+      }
+    }
+    return idx;
+  }
+
+  /* 限制色号数量：留用得最多的几个，其余并到最近的保留色 */
+  function limitColors(idx) {
+    const count = new Int32Array(BEADS.length);
+    for (let i = 0; i < idx.length; i++) count[idx[i]]++;
+
+    const used = [];
+    for (let i = 0; i < count.length; i++) if (count[i]) used.push(i);
+
+    if (!state.maxColors || used.length <= state.maxColors) {
+      return { idx: idx, count: count, colors: used.length };
+    }
+
+    used.sort(function (a, b) { return count[b] - count[a]; });
+    const keep = used.slice(0, state.maxColors);
+    const isKept = new Uint8Array(BEADS.length);
+    keep.forEach(function (i) { isKept[i] = 1; });
+
+    const remap = new Int16Array(BEADS.length);
+    for (let i = 0; i < BEADS.length; i++) {
+      if (isKept[i]) { remap[i] = i; continue; }
+
+      const p = BEADS[i];
+      let best = keep[0], bestD = Infinity;
+      for (let k = 0; k < keep.length; k++) {
+        const q = BEADS[keep[k]];
+        const dr = p.r - q.r, dg = p.g - q.g, db = p.b - q.b;
+        const d = 2 * dr * dr + 4 * dg * dg + 3 * db * db;
+        if (d < bestD) { bestD = d; best = keep[k]; }
+      }
+      remap[i] = best;
+    }
+
+    const out = new Int16Array(idx.length);
+    const c2 = new Int32Array(BEADS.length);
+    for (let i = 0; i < idx.length; i++) {
+      const v = remap[idx[i]];
+      out[i] = v;
+      c2[v]++;
+    }
+
+    return { idx: out, count: c2, colors: keep.length };
+  }
+
+  /* ============================================================
+     画图纸
+     ============================================================ */
+  const small = document.createElement("canvas");
+
+  function roundRect(ctx, x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function drawChart(target, cols, rows, cell, withCodes) {
+    const W = cols * cell, H = rows * cell;
+
+    if (target.width !== W || target.height !== H) {
+      target.width = W;
+      target.height = H;
+    }
+
+    const ctx = target.getContext("2d");
+    ctx.clearRect(0, 0, W, H);
+
+    const gapPx = Math.round(state.gap * cell);
+    const seamless = gapPx < 1 && state.shape === "square";
+
+    if (seamless) {
+      // 无缝方豆：整块放大，边缘最锐利
+      small.width = cols;
+      small.height = rows;
+      const sctx = small.getContext("2d");
+      const img = sctx.createImageData(cols, rows);
+      for (let i = 0; i < lastIdx.length; i++) {
+        const p = BEADS[lastIdx[i]];
+        img.data[i * 4] = p.r;
+        img.data[i * 4 + 1] = p.g;
+        img.data[i * 4 + 2] = p.b;
+        img.data[i * 4 + 3] = 255;
+      }
+      sctx.putImageData(img, 0, 0);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(small, 0, 0, W, H);
+    } else {
+      ctx.fillStyle = state.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      const size = Math.max(1, cell - gapPx);
+      const inset = gapPx / 2;
+      const radius = state.shape === "round" ? size * 0.34 : 0;
+
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const p = BEADS[lastIdx[y * cols + x]];
+          const px = x * cell + inset, py = y * cell + inset;
+
+          ctx.fillStyle = p.h;
+
+          if (state.shape === "circle") {
+            ctx.beginPath();
+            ctx.arc(px + size / 2, py + size / 2, size / 2, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (radius > 0) {
+            roundRect(ctx, px, py, size, size, radius);
+            ctx.fill();
+          } else {
+            ctx.fillRect(px, py, size, size);
+          }
+        }
+      }
+    }
+
+    if (!withCodes || cell < CODE_MIN_CELL) return;
+
+    // 色号文字
+    const fs = Math.round(cell * 0.40);
+    ctx.font = "700 " + fs + "px " + '"SF Mono", ui-monospace, Menlo, Consolas, monospace';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    const inner = Math.max(1, cell - gapPx);
+    const half = gapPx / 2 + inner / 2;
+
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const p = BEADS[lastIdx[y * cols + x]];
+        ctx.fillStyle = p.lum > 150 ? "rgba(46,38,32,.7)" : "rgba(255,255,255,.88)";
+        ctx.fillText(p.c, x * cell + half, y * cell + half + 0.5);
+      }
+    }
+  }
+
+  /* ============================================================
+     渲染
+     ============================================================ */
+  let rafId = null;
+
+  function scheduleRender() {
+    if (rafId !== null) return;
+    rafId = requestAnimationFrame(function () {
+      rafId = null;
+      render();
+    });
+  }
+
+  function render() {
+    if (!sourceCanvas) return;
+
+    const cols = state.beads;
+    const rows = Math.max(1, Math.round((cols * sourceH) / sourceW));
+
+    const reduced = downscale(sourceCanvas, cols, rows);
+
+    work.width = cols;
+    work.height = rows;
+    const wctx = work.getContext("2d", { willReadFrequently: true });
+    wctx.imageSmoothingEnabled = true;
+    wctx.imageSmoothingQuality = "high";
+    wctx.clearRect(0, 0, cols, rows);
+    wctx.drawImage(reduced, 0, 0, cols, rows);
+
+    const imgData = wctx.getImageData(0, 0, cols, rows);
+    adjustPass(imgData.data);
+
+    const mapped = mapToBeads(imgData.data, cols, rows);
+    const res = limitColors(mapped);
+
+    lastIdx = res.idx;
+    lastCols = cols;
+    lastRows = rows;
+
+    // 显示格子尺寸：宽高都要放得下
+    const avail = Math.max(180, chartWrap.clientWidth - 24);
+    const maxH = Math.max(180, Math.round(window.innerHeight * 0.58));
+
+    let cell = Math.floor(avail / cols);
+    cell = Math.min(cell, Math.floor(maxH / rows));
+    cell = Math.max(4, Math.min(56, cell));
+    lastCell = cell;
+
+    drawChart(view, cols, rows, cell, state.showCodes);
+
+    // 用豆清单
+    const bom = [];
+    for (let i = 0; i < res.count.length; i++) {
+      if (res.count[i] > 0) bom.push({ i: i, n: res.count[i] });
+    }
+    bom.sort(function (a, b) { return b.n - a.n; });
+    lastBom = bom;
+
+    const total = cols * rows;
+    const cmW = Math.round(cols * 0.5);
+    const cmH = Math.round(rows * 0.5);
+
+    els.meta.innerHTML =
+      "<b>" + cols + " × " + rows + "</b> 颗 · 共 " +
+      total.toLocaleString("en-US") + " 颗 · " + bom.length + " 个色号 · 成品约 " +
+      cmW + " × " + cmH + " cm";
+
+    els.bomMeta.textContent = "5mm 豆 · 合计 " + total.toLocaleString("en-US") + " 颗";
+
+    els.bomList.innerHTML = bom.map(function (b) {
+      const p = BEADS[b.i];
+      return '<div class="bom-item">' +
+        '<span class="sw" style="background:' + p.h + '"></span>' +
+        '<span class="code">' + p.c + '</span>' +
+        '<span class="nm">' + p.n + '</span>' +
+        '<span class="ct">' + b.n + '</span>' +
+        "</div>";
+    }).join("");
+
+    els.codeHint.innerHTML = cell >= CODE_MIN_CELL
+      ? "格子够大，色号直接写在豆子上。"
+      : "这一版格子太小，画面上先不标号；下载图纸时会按导出尺寸补上。";
+  }
+
+  /* ============================================================
+     导出
+     ============================================================ */
+  function legendMetrics() {
+    const cellPx = Math.max(22, Math.round(state.exportCell * 0.55));
+    const itemW = cellPx + 6 + 92 + 16;
+    return { cellPx: cellPx, itemW: itemW, fs: Math.round(cellPx * 0.62) };
+  }
+
+  function drawLegend(ctx, x, y, maxW) {
+    const m = legendMetrics();
+    const perRow = Math.max(1, Math.floor(maxW / m.itemW));
+    let cx = x, cy = y, col = 0;
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+
+    for (let k = 0; k < lastBom.length; k++) {
+      const p = BEADS[lastBom[k].i];
+
+      if (col >= perRow) { col = 0; cx = x; cy += m.cellPx + 12; }
+
+      roundRect(ctx, cx, cy - m.cellPx / 2, m.cellPx, m.cellPx, m.cellPx * 0.3);
+      ctx.fillStyle = p.h;
+      ctx.fill();
+      ctx.strokeStyle = "rgba(46,38,32,.22)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.font = "700 " + m.fs + "px " + '"SF Mono", ui-monospace, Menlo, Consolas, monospace';
+      ctx.fillStyle = "#2E2620";
+      ctx.fillText(p.c, cx + m.cellPx + 8, cy);
+
+      ctx.font = "500 " + m.fs + "px " + '-apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
+      ctx.fillStyle = "#8A7565";
+      ctx.fillText(p.n + " " + lastBom[k].n, cx + m.cellPx + 8 + m.fs * 3.1, cy);
+
+      cx += m.itemW;
+      col++;
+    }
+
+    return cy + m.cellPx;
+  }
+
+  function downloadChart() {
+    if (!lastIdx) return;
+
+    const cell = state.exportCell;
+    const cols = lastCols, rows = lastRows;
+
+    const chart = document.createElement("canvas");
+    drawChart(chart, cols, rows, cell, state.showCodes);
+
+    const pad = Math.max(16, Math.round(cell * 0.7));
+    const innerW = chart.width - pad * 2;
+    const m = legendMetrics();
+    const perRow = Math.max(1, Math.floor(innerW / m.itemW));
+    const legendRows = Math.ceil(lastBom.length / perRow);
+    const legendH = legendRows * (m.cellPx + 12) + m.cellPx * 0.6;
+
+    const final = document.createElement("canvas");
+    final.width = chart.width;
+    final.height = chart.height + pad * 2 + legendH;
+
+    const fctx = final.getContext("2d");
+    fctx.fillStyle = "#FFFDF8";
+    fctx.fillRect(0, 0, final.width, final.height);
+    fctx.drawImage(chart, 0, 0);
+
+    // 分隔虚线
+    fctx.strokeStyle = "rgba(46,38,32,.18)";
+    fctx.lineWidth = 2;
+    fctx.setLineDash([8, 8]);
+    fctx.beginPath();
+    fctx.moveTo(pad, chart.height + pad * 0.55);
+    fctx.lineTo(final.width - pad, chart.height + pad * 0.55);
+    fctx.stroke();
+    fctx.setLineDash([]);
+
+    drawLegend(fctx, pad, chart.height + pad * 1.5, innerW);
+
+    final.toBlob(function (blob) {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "拼豆图纸-" + cols + "x" + rows + ".png";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+    }, "image/png");
+
+    say(pickLine(ON_SAVE));
+  }
+
+  function downloadCSV() {
+    if (!lastBom.length) return;
+
+    const rows = [["色号", "颜色名", "HEX", "颗数"]];
+    lastBom.forEach(function (b) {
+      const p = BEADS[b.i];
+      rows.push([p.c, p.n, p.h, String(b.n)]);
+    });
+    rows.push(["合计", "", "", String(lastCols * lastRows)]);
+
+    const csv = "\uFEFF" + rows.map(function (r) {
+      return r.map(function (v) {
+        return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+      }).join(",");
+    }).join("\r\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "用豆清单-" + lastCols + "x" + lastRows + ".csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+
+    say("清单拿好，按色号买豆就行。");
+  }
+
+  /* ============================================================
+     萌宠台词
+     ============================================================ */
+  const ON_UPLOAD = [
+    "这张我有感觉。",
+    "先别动，我看看构图。",
+    "收到，这就拆成一格一格。",
+    "嗯，这张适合少用几个色号。"
+  ];
+  const ON_IDLE = [
+    "我盯着呢，一颗都别数错。",
+    "间隙留一点，拼起来才好看。",
+    "色号写在豆子上，照着摆就行。",
+    "先挑底色，再挑豆子。",
+    "小挂件 16 颗就够可爱了。",
+    "别用太多颜色，买豆会破产。"
+  ];
+  const ON_SAVE = [
+    "图纸装好啦，别忘了买底板。",
+    "清单也给你了，按包买不会多。",
+    "打印出来对一下色号再动手。"
+  ];
+  const ON_TOOMANY = [
+    "豆子有点多，估计得买两包。",
+    "这个尺寸……底板要拼两块。",
+    "颗数调小一点，图纸也看得清。"
+  ];
+
+  function pickLine(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function say(text) {
+    els.petLine.style.opacity = "0";
+    setTimeout(function () {
+      els.petLine.textContent = text;
+      els.petLine.style.opacity = "1";
+    }, 130);
+  }
+  els.petLine.style.transition = "opacity .3s";
+
+  els.mascots.addEventListener("click", function () {
+    els.mascots.classList.remove("hop");
+    void els.mascots.offsetWidth;
+    els.mascots.classList.add("hop");
+    say(pickLine(ON_IDLE));
+  });
+
+  els.petSwitch.addEventListener("click", function (e) {
+    const b = e.target.closest("button");
+    if (!b) return;
+    Array.prototype.forEach.call(els.petSwitch.children, function (x) {
+      x.classList.toggle("on", x === b);
+    });
+    document.body.classList.toggle("pet-dog", b.dataset.pet === "dog");
+    say(b.dataset.pet === "dog" ? "汪。图纸交给我。" : "喵。数豆子我在行。");
+  });
+
+  /* ============================================================
+     UI
+     ============================================================ */
+  function paintRange(el) {
+    const min = +el.min, max = +el.max, v = +el.value;
+    el.style.setProperty("--p", ((v - min) / (max - min)) * 100 + "%");
+  }
+
+  function setSeg(group, v) {
+    Array.prototype.forEach.call(group.children, function (b) {
+      if (b.tagName !== "BUTTON") return;
+      b.classList.toggle("on", b.dataset.v === String(v));
+    });
+  }
+
+  function clearPresets() {
+    Array.prototype.forEach.call(els.presets.children, function (b) {
+      b.classList.remove("on");
+    });
+  }
+
+  function touch() {
+    clearPresets();
+    scheduleRender();
+  }
+
+  function syncUI() {
+    els.beads.value = state.beads;
+    els.beadsOut.textContent = state.beads;
+    els.gap.value = Math.round(state.gap * 100);
+    els.gapOut.textContent = Math.round(state.gap * 100) + "%";
+    els.bright.value = state.brightness;
+    els.brightOut.textContent = state.brightness;
+    els.contrast.value = state.contrast;
+    els.contrastOut.textContent = state.contrast;
+    els.sat.value = state.sat;
+    els.satOut.textContent = state.sat + "%";
+
+    [els.beads, els.gap, els.bright, els.contrast, els.sat].forEach(paintRange);
+
+    setSeg(els.shapeSeg, state.shape);
+    setSeg(els.colorSeg, state.maxColors);
+    setSeg(els.ditherSeg, state.dither ? "1" : "0");
+    setSeg(els.codeSeg, state.showCodes ? "1" : "0");
+    setSeg(els.bgSeg, state.bg);
+
+    els.bgCustom.value = /^#[0-9a-f]{6}$/i.test(state.bg) ? state.bg : "#ffffff";
+  }
+
+  /* ============================================================
+     事件
+     ============================================================ */
+  function bindRange(el, out, key, fmt) {
+    el.addEventListener("input", function () {
+      const v = +el.value;
+      state[key] = fmt ? fmt.on(v) : v;
+      out.textContent = fmt ? fmt.text(v) : v;
+      paintRange(el);
+      touch();
+    });
+  }
+
+  bindRange(els.beads, els.beadsOut, "beads");
+  bindRange(els.gap, els.gapOut, "gap", {
+    on: function (v) { return v / 100; },
+    text: function (v) { return v + "%"; }
+  });
+  bindRange(els.bright, els.brightOut, "brightness");
+  bindRange(els.contrast, els.contrastOut, "contrast");
+  bindRange(els.sat, els.satOut, "sat", {
+    on: function (v) { return v; },
+    text: function (v) { return v + "%"; }
+  });
+
+  els.shapeSeg.addEventListener("click", function (e) {
+    const b = e.target.closest("button");
+    if (!b) return;
+    state.shape = b.dataset.v;
+    setSeg(els.shapeSeg, state.shape);
+    touch();
+  });
+
+  els.colorSeg.addEventListener("click", function (e) {
+    const b = e.target.closest("button");
+    if (!b) return;
+    state.maxColors = +b.dataset.v;
+    setSeg(els.colorSeg, state.maxColors);
+    if (state.maxColors && state.maxColors <= 8) say("八个色号，够省了。");
+    touch();
+  });
+
+  els.ditherSeg.addEventListener("click", function (e) {
+    const b = e.target.closest("button");
+    if (!b) return;
+    state.dither = b.dataset.v === "1";
+    setSeg(els.ditherSeg, b.dataset.v);
+    touch();
+  });
+
+  els.codeSeg.addEventListener("click", function (e) {
+    const b = e.target.closest("button");
+    if (!b) return;
+    state.showCodes = b.dataset.v === "1";
+    setSeg(els.codeSeg, b.dataset.v);
+    scheduleRender();
+  });
+
+  els.bgSeg.addEventListener("click", function (e) {
+    const b = e.target.closest("button");
+    if (!b) return;
+    state.bg = b.dataset.v;
+    setSeg(els.bgSeg, state.bg);
+    touch();
+  });
+
+  els.bgCustom.addEventListener("input", function () {
+    state.bg = els.bgCustom.value;
+    setSeg(els.bgSeg, state.bg);
+    touch();
+  });
+
+  els.presets.addEventListener("click", function (e) {
+    const b = e.target.closest("button");
+    if (!b) return;
+    const p = PRESETS[b.dataset.p];
+    if (!p) return;
+
+    Object.keys(p).forEach(function (k) { state[k] = p[k]; });
+    clearPresets();
+    b.classList.add("on");
+    syncUI();
+    render();
+    say(b.dataset.p === "charm" ? "小挂件，八色就够。" : "好，按这个尺寸来。");
+  });
+
+  els.expSize.addEventListener("change", function () {
+    state.exportCell = +els.expSize.value;
+  });
+
+  els.download.addEventListener("click", downloadChart);
+  els.csv.addEventListener("click", downloadCSV);
+
+  function showOrig(on) { frame.classList.toggle("compare", on); }
+  const compareBtn = $("#compare");
+  compareBtn.addEventListener("pointerdown", function (e) { e.preventDefault(); showOrig(true); });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) {
+    compareBtn.addEventListener(ev, function () { showOrig(false); });
+  });
+
+  window.addEventListener("keydown", function (e) {
+    if (e.code === "Space" && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) {
+      e.preventDefault();
+      showOrig(true);
+    }
+  });
+  window.addEventListener("keyup", function (e) {
+    if (e.code === "Space") showOrig(false);
+  });
+
+  // 悬停看色号
+  view.addEventListener("mousemove", function (e) {
+    if (!lastIdx) return;
+
+    const r = view.getBoundingClientRect();
+    const sx = view.width / r.width;
+    const sy = view.height / r.height;
+    const cx = Math.floor(((e.clientX - r.left) * sx) / lastCell);
+    const cy = Math.floor(((e.clientY - r.top) * sy) / lastCell);
+
+    if (cx < 0 || cy < 0 || cx >= lastCols || cy >= lastRows) {
+      tip.classList.remove("show");
+      return;
+    }
+
+    const p = BEADS[lastIdx[cy * lastCols + cx]];
+    tip.querySelector("i").style.background = p.h;
+    tip.querySelector("b").textContent = p.c;
+    tip.querySelector("span").textContent = p.n;
+
+    const wrap = chartWrap.getBoundingClientRect();
+    tip.style.left = (e.clientX - wrap.left) + "px";
+    tip.style.top = (e.clientY - wrap.top) + "px";
+    tip.classList.add("show");
+  });
+  view.addEventListener("mouseleave", function () { tip.classList.remove("show"); });
+
+  // 上传
+  els.pick.addEventListener("click", function () { els.fileInput.click(); });
+  els.fileInput.addEventListener("change", function () {
+    if (els.fileInput.files && els.fileInput.files[0]) loadFile(els.fileInput.files[0]);
+    els.fileInput.value = "";
+  });
+
+  // 拖拽
+  ["dragenter", "dragover"].forEach(function (ev) {
+    els.chartCard.addEventListener(ev, function (e) {
+      e.preventDefault();
+      els.chartCard.classList.add("dragover");
+    });
+  });
+  ["dragleave", "dragend"].forEach(function (ev) {
+    els.chartCard.addEventListener(ev, function (e) {
+      if (!els.chartCard.contains(e.relatedTarget)) {
+        els.chartCard.classList.remove("dragover");
+      }
+    });
+  });
+  els.chartCard.addEventListener("drop", function (e) {
+    e.preventDefault();
+    els.chartCard.classList.remove("dragover");
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) loadFile(f);
+  });
+  document.addEventListener("dragover", function (e) { e.preventDefault(); });
+  document.addEventListener("drop", function (e) { e.preventDefault(); });
+
+  // 粘贴
+  window.addEventListener("paste", function (e) {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") === 0) {
+        const f = items[i].getAsFile();
+        if (f) { loadFile(f); break; }
+      }
+    }
+  });
+
+  // 窗口变化
+  let rzTimer = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(rzTimer);
+    rzTimer = setTimeout(function () { if (sourceCanvas) scheduleRender(); }, 150);
+  });
+
+  /* ============================================================
+     启动
+     ============================================================ */
+  const demo = makeDemo();
+  normalize(demo, demo.width, demo.height);
+  origImg.src = demo.toDataURL("image/png");
+  els.thumb.src = origImg.src;
+  els.fname.textContent = "示例：橘猫";
+  els.fsize.textContent = demo.width + " × " + demo.height;
+  els.filebar.classList.add("show");
+
+  syncUI();
+  render();
+
+  setTimeout(function () {
+    if (lastCols * lastRows > 3000) say(pickLine(ON_TOOMANY));
+  }, 2600);
+})();
+</script>
+</body>
+</html>
